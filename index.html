@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+
+    <script src="../build/babel.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <div id="example"> 1234556 </div>
+    <script type="text/babel">
+      /** @jsx hyperScript **/
+      const my = <div id="name">Hello, world!</div>
+      // ReactDOM.render(
+      //         my,
+      //   document.getElementById('example')
+      // );
+      var realNode = render(my)
+
+      //! 放到页面上的div下，作为虚拟dom的root节点
+      var oDivs = document.getElementById("example");
+      $("#example").html(realNode);
+
+      function hyperScript(nodeName , attributes , ...args){
+        let children =  args.length ? [].concat(...args) : [];
+        return {nodeName,attributes,children  }
+      }
+
+      function render( vnode ){
+        //如果是文本，直接返回
+        if(vnode.split){
+          return document.createTextNode( vnode )
+        }
+        //是一个虚拟DOM
+        let node = document.createElement( vnode.nodeName );
+        //get属性
+        let attrs = vnode.attrbutes || {} ;
+        //给节点加上属性
+        Object.keys( attrs ).forEach( item => node.setAttribute( item , attrs[item] ) );
+        //递归处理子元素，children
+        ( vnode.children || [] ).forEach( item => node.appendChild( render(item) ) );
+        //返回node 
+        return node;
+      }
+    </script>
+  </body>
+</html>
